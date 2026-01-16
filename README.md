@@ -1,5 +1,13 @@
 ## Hi there 👋
 
+### Icelandic Alphabet Learning
+
+**Arno** → The next letter is **Ó**
+
+In the Icelandic alphabet, after the letters in "Arno" (A-R-N-O), the next letter is **Ó** (O with an acute accent).
+
+The Icelandic alphabet sequence: ... N → O → **Ó** → P ...
+
 <!--
 **finnur-fk/finnur-fk** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
 
