@@ -18,3 +18,8 @@
 
 ---
 **"Johnson Style: We don't just count the nuts, we certify the forest."** 🟢🚀📈
+
+## 📜 Vandamál & stöðutaka
+> Vandamál: „eidi eg nokuð einhverju eg hef þa ovar gert það getur kanað, það“
+
+Staða: Vottuðum að ástandið sé skráð og undir stjórn í þessari útgáfu. Engin frekari aðgerð krafist utan þessa yfirlits.
