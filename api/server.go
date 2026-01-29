@@ -39,11 +39,14 @@ func (s *Storage) SetTransactions(txs []parser.Transaction) {
 	s.transactions = txs
 }
 
-// GetTransactions retrieves stored transactions
+// GetTransactions retrieves stored transactions (returns a copy to prevent race conditions)
 func (s *Storage) GetTransactions() []parser.Transaction {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	return s.transactions
+	// Return a copy of the slice to prevent race conditions
+	txsCopy := make([]parser.Transaction, len(s.transactions))
+	copy(txsCopy, s.transactions)
+	return txsCopy
 }
 
 // NewServer creates a new API server
@@ -93,14 +96,14 @@ func (s *Server) handleUpload(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// Validate file type
-	if header.Header.Get("Content-Type") != "text/csv" && 
-	   !isCSVFilename(header.Filename) {
-		sendError(w, "File must be a CSV", http.StatusBadRequest)
+	// Validate file type (filename must end with .csv)
+	if !isCSVFilename(header.Filename) {
+		sendError(w, "File must have .csv extension", http.StatusBadRequest)
 		return
 	}
 
-	// Parse the CSV
+	// Parse the CSV (this provides content validation)
+	// The parser will fail if the file doesn't contain valid CSV data
 	transactions, err := s.parser.Parse(file)
 	if err != nil {
 		sendError(w, "Failed to parse CSV: "+err.Error(), http.StatusBadRequest)

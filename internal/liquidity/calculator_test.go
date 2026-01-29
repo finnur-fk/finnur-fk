@@ -33,7 +33,7 @@ func TestCalculator_Calculate_Success(t *testing.T) {
 	}
 
 	if report.FinalBalance != 620.75 {
-		t.Errorf("Expected FinalBalance 620.75 (highest balance), got %.2f", report.FinalBalance)
+		t.Errorf("Expected FinalBalance 620.75 (last transaction's balance), got %.2f", report.FinalBalance)
 	}
 
 	if report.TransactionCount != 3 {

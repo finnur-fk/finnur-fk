@@ -71,6 +71,8 @@ func (p *PayPalParser) Parse(reader io.Reader) ([]Transaction, error) {
 }
 
 // parseHeader identifies column positions in the CSV header
+// Note: If multiple columns match the same category (e.g., both "note" and "message"),
+// only the first match will be used. This is by design to handle various PayPal export formats.
 func (p *PayPalParser) parseHeader(header []string) (map[string]int, error) {
 	indices := make(map[string]int)
 	
@@ -78,29 +80,52 @@ func (p *PayPalParser) parseHeader(header []string) (map[string]int, error) {
 		col = strings.ToLower(strings.TrimSpace(col))
 		
 		// Map various PayPal header variations to standard names
+		// First match wins if multiple columns could map to the same field
 		switch {
 		case strings.Contains(col, "transaction") && strings.Contains(col, "id"):
-			indices["transaction_id"] = i
+			if _, exists := indices["transaction_id"]; !exists {
+				indices["transaction_id"] = i
+			}
 		case col == "date" || col == "timestamp":
-			indices["date"] = i
+			if _, exists := indices["date"]; !exists {
+				indices["date"] = i
+			}
 		case col == "name" || col == "from name" || col == "to name":
-			indices["name"] = i
+			if _, exists := indices["name"]; !exists {
+				indices["name"] = i
+			}
 		case col == "type" || col == "transaction type":
-			indices["type"] = i
+			if _, exists := indices["type"]; !exists {
+				indices["type"] = i
+			}
 		case col == "status" || col == "transaction status":
-			indices["status"] = i
+			if _, exists := indices["status"]; !exists {
+				indices["status"] = i
+			}
 		case col == "currency" || col == "currency code":
-			indices["currency"] = i
+			if _, exists := indices["currency"]; !exists {
+				indices["currency"] = i
+			}
 		case col == "gross" || col == "amount" || col == "gross amount":
-			indices["gross"] = i
+			if _, exists := indices["gross"]; !exists {
+				indices["gross"] = i
+			}
 		case col == "fee" || col == "fee amount":
-			indices["fee"] = i
+			if _, exists := indices["fee"]; !exists {
+				indices["fee"] = i
+			}
 		case col == "net" || col == "net amount":
-			indices["net"] = i
+			if _, exists := indices["net"]; !exists {
+				indices["net"] = i
+			}
 		case col == "balance" || col == "account balance":
-			indices["balance"] = i
+			if _, exists := indices["balance"]; !exists {
+				indices["balance"] = i
+			}
 		case strings.Contains(col, "note") || strings.Contains(col, "message") || col == "item title":
-			indices["note"] = i
+			if _, exists := indices["note"]; !exists {
+				indices["note"] = i
+			}
 		}
 	}
 
@@ -177,6 +202,9 @@ func (p *PayPalParser) parseTransaction(row []string, indices map[string]int) (T
 }
 
 // parseAmount converts a string amount to float64, handling various formats
+// Note: This function assumes US/UK number format (comma as thousands separator, period as decimal)
+// Formats like "1.234,56" (European) are not currently supported.
+// Currency symbols ($, €, £, ¥) are removed. Amounts with suffix currency codes (e.g., "100 kr") are not supported.
 func parseAmount(s string) (float64, error) {
 	s = strings.TrimSpace(s)
 	if s == "" {

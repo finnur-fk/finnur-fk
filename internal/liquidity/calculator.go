@@ -36,8 +36,8 @@ func (c *Calculator) Calculate(transactions []parser.Transaction) (*LiquidityRep
 		ByCurrency: make(map[string]float64),
 	}
 
-	var maxBalance float64
-	maxBalanceSet := false
+	var lastBalance float64
+	lastBalanceSet := false
 
 	for _, tx := range transactions {
 		// Sum up amounts
@@ -51,12 +51,10 @@ func (c *Calculator) Calculate(transactions []parser.Transaction) (*LiquidityRep
 			report.ByCurrency[tx.Currency] += tx.Net
 		}
 
-		// Track the latest balance (highest balance value found)
+		// Track the last balance (assumes transactions are in chronological order)
 		if tx.Balance != 0 {
-			if !maxBalanceSet || tx.Balance > maxBalance {
-				maxBalance = tx.Balance
-				maxBalanceSet = true
-			}
+			lastBalance = tx.Balance
+			lastBalanceSet = true
 		}
 
 		// Count transaction statuses
@@ -72,8 +70,8 @@ func (c *Calculator) Calculate(transactions []parser.Transaction) (*LiquidityRep
 	}
 
 	// Set final balance
-	if maxBalanceSet {
-		report.FinalBalance = maxBalance
+	if lastBalanceSet {
+		report.FinalBalance = lastBalance
 	} else {
 		// If no balance field, use total net as approximation
 		report.FinalBalance = report.TotalNet
