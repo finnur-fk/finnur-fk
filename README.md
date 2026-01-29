@@ -18,3 +18,10 @@
 
 ---
 **"Johnson Style: We don't just count the nuts, we certify the forest."** 🟢🚀📈
+
+## Box 0 Dashboard · Crypto-Liquidity
+Open `index.html` in a browser to view the Sovereign Wealth cockpit:
+1. Enter your PayPal USD balance.
+2. Adjust XRP/ETH/BTC holdings (persisted locally).
+3. Click “Refresh Kraken Prices” to pull live ticker data and recompute totals.
+4. Audit notes appear under “Bókari Tax-View” for export.
