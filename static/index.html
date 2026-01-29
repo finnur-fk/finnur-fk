@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FKlausnir Enterprise Engine - Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-content">
+                <h1>🏛️ FKlausnir Enterprise Engine</h1>
+                <div class="status-badge">
+                    <span class="status">Status: Operational</span>
+                    <span class="grade">Grade: A+</span>
+                </div>
+            </div>
+            <p class="tagline">"Johnson Style: We don't just count the nuts, we certify the forest."</p>
+        </header>
+
+        <main>
+            <section class="dashboard-section">
+                <h2>📊 Dashboard Overview</h2>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">📈</div>
+                        <h3>Transactions</h3>
+                        <p class="stat-value">603+</p>
+                        <p class="stat-label">Records Processed</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🛡️</div>
+                        <h3>Security</h3>
+                        <p class="stat-value">A+</p>
+                        <p class="stat-label">Privacy Grade</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">🔒</div>
+                        <h3>Vault Status</h3>
+                        <p class="stat-value">Secure</p>
+                        <p class="stat-label">Data Protection</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚡</div>
+                        <h3>Uptime</h3>
+                        <p class="stat-value">99.9%</p>
+                        <p class="stat-label">System Health</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="upload-section">
+                <h2>📁 PayPal CSV Upload</h2>
+                <p class="section-description">Upload your PayPal transaction CSV files to integrate them into the Master Ledger. All data is encrypted and stored securely in the vault system.</p>
+                
+                <div class="upload-container">
+                    <form id="uploadForm" enctype="multipart/form-data">
+                        <div class="upload-area" id="uploadArea">
+                            <div class="upload-icon">📤</div>
+                            <h3>Drag & Drop CSV File Here</h3>
+                            <p>or click to browse</p>
+                            <input type="file" id="csvfile" name="csvfile" accept=".csv" required>
+                        </div>
+                        <button type="submit" class="upload-button" id="uploadButton">
+                            Upload to Vault
+                        </button>
+                    </form>
+                    
+                    <div id="uploadStatus" class="upload-status"></div>
+                </div>
+            </section>
+
+            <section class="info-section">
+                <h2>🛡️ Core Features</h2>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <h3>🔐 Vault System</h3>
+                        <p>Locked vault for sensitive PayPal and Bank data with end-to-end encryption</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>✅ Grade Blocker</h3>
+                        <p>Automatic quality control that ensures only A+ grade data passes through</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>🤖 AI-Powered</h3>
+                        <p>Copilot Agent working 24/7 for intelligent transaction processing</p>
+                    </div>
+                    <div class="feature-item">
+                        <h3>📜 Audit Trail</h3>
+                        <p>Complete 11-year transaction history with full audit capabilities</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>© 2026 FKlausnir Enterprise Engine | Privacy by Design | CEO: Finnur</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
