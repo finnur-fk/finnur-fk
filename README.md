@@ -20,6 +20,6 @@
 **"Johnson Style: We don't just count the nuts, we certify the forest."** 🟢🚀📈
 
 ## 📜 Vandamál & stöðutaka
-> Vandamál: „eyddi ég nokkuð einhverju? Ég hef það ofar gert; það getur kannað það.“
+> Vandamál: „eyddi ég einhverju? Ég hef gert það áður; það má kanna það.“
 
-Staða: Vottuðum að ástandið sé skráð og undir stjórn í þessari útgáfu. Engin frekari aðgerð krafist utan þessa yfirlits.
+Staða: Vottuð að ástandið er skráð og undir stjórn í þessari útgáfu. Engin frekari aðgerð krafist utan þessa yfirlits.
