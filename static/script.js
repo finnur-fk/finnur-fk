@@ -1,3 +1,7 @@
+// Constants
+const STATUS_HIDE_DELAY_MS = 5000;
+const ANIMATION_DURATION_MS = 300;
+
 document.addEventListener('DOMContentLoaded', function() {
     const uploadForm = document.getElementById('uploadForm');
     const uploadArea = document.getElementById('uploadArea');
@@ -112,24 +116,25 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadStatus.textContent = message;
         uploadStatus.className = `upload-status show ${type}`;
         
-        // Auto-hide after 5 seconds
+        // Auto-hide after delay
         setTimeout(() => {
             uploadStatus.classList.remove('show');
-        }, 5000);
+        }, STATUS_HIDE_DELAY_MS);
     }
 
     function updateTransactionCount() {
         const statValue = document.querySelector('.stat-card .stat-value');
         if (statValue) {
-            const currentValue = parseInt(statValue.textContent) || 603;
-            statValue.textContent = (currentValue + 1) + '+';
+            const currentValue = parseInt(statValue.textContent) || 0;
+            const newValue = currentValue > 0 ? currentValue + 1 : 604;
+            statValue.textContent = newValue + '+';
             
             // Add animation
             statValue.style.transform = 'scale(1.2)';
-            statValue.style.transition = 'transform 0.3s ease';
+            statValue.style.transition = `transform ${ANIMATION_DURATION_MS}ms ease`;
             setTimeout(() => {
                 statValue.style.transform = 'scale(1)';
-            }, 300);
+            }, ANIMATION_DURATION_MS);
         }
     }
 });
