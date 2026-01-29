@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FKlausnir Enterprise Dashboard - Tax Compliance</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
+
+        .header h1 .icon {
+            margin-right: 15px;
+            font-size: 38px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .controls {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .view-mode-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .view-mode-selector label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn.active {
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .status-badge.tax-compliance {
+            background: #10b981;
+            color: white;
+        }
+
+        .status-badge.full-view {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .architect-key-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .architect-key-input input {
+            padding: 10px 15px;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 250px;
+        }
+
+        .architect-key-input input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            color: #666;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            color: #333;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .stat-card.positive .value {
+            color: #10b981;
+        }
+
+        .stat-card.negative .value {
+            color: #ef4444;
+        }
+
+        .transactions {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .transactions h2 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .audit-stamp {
+            background: #10b981;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f9fafb;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+
+        tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        .type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .type-badge.public {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .type-badge.private {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .amount {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .amount.positive {
+            color: #10b981;
+        }
+
+        .amount.negative {
+            color: #ef4444;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            color: #991b1b;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .footer strong {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><span class="icon">🏛️</span>FKlausnir Enterprise Dashboard</h1>
+            <p><strong>Tax-Compliance View Mode</strong> | Certified for Official Audits | Privacy by Design</p>
+        </div>
+
+        <div class="controls">
+            <div class="view-mode-selector">
+                <label>View Mode:</label>
+                <button class="btn btn-success active" id="btn-tax-compliance" onclick="switchViewMode('tax-compliance')">
+                    🔒 Tax-Compliance
+                </button>
+                <button class="btn btn-warning" id="btn-full" onclick="switchViewMode('full')">
+                    🔓 Full View (Requires Key)
+                </button>
+            </div>
+            <div class="architect-key-input" id="key-input" style="display: none;">
+                <input type="password" id="architect-key" placeholder="Enter Architect Key">
+                <button class="btn btn-primary" onclick="loadDashboard()">Unlock</button>
+            </div>
+            <span class="status-badge tax-compliance" id="status-badge">Tax-Compliance Active</span>
+        </div>
+
+        <div id="error-container"></div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <h3>Total Transactions</h3>
+                <div class="value" id="total-count">-</div>
+            </div>
+            <div class="stat-card" id="total-card">
+                <h3>Net Amount</h3>
+                <div class="value" id="total-amount">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>View Mode</h3>
+                <div class="value" style="font-size: 20px;" id="view-mode-text">Tax-Compliance</div>
+            </div>
+        </div>
+
+        <div class="transactions">
+            <h2>
+                <span>Transaction Ledger</span>
+                <span class="audit-stamp" id="audit-stamp">✓ AUDIT APPROVED</span>
+            </h2>
+            <div id="transactions-container">
+                <div class="loading">Loading transactions...</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <strong>"Johnson Style: We don't just count the nuts, we certify the forest."</strong> 🟢🚀📈
+            <br>© 2024 FKlausnir Enterprise | A+ Guaranteed | Privacy by Design
+        </div>
+    </div>
+
+    <script>
+        let currentViewMode = 'tax-compliance';
+
+        function switchViewMode(mode) {
+            currentViewMode = mode;
+            
+            // Update button states
+            document.getElementById('btn-tax-compliance').classList.remove('active');
+            document.getElementById('btn-full').classList.remove('active');
+            
+            if (mode === 'tax-compliance') {
+                document.getElementById('btn-tax-compliance').classList.add('active');
+                document.getElementById('key-input').style.display = 'none';
+                document.getElementById('status-badge').className = 'status-badge tax-compliance';
+                document.getElementById('status-badge').textContent = 'Tax-Compliance Active';
+                document.getElementById('audit-stamp').style.display = 'inline-block';
+            } else {
+                document.getElementById('btn-full').classList.add('active');
+                document.getElementById('key-input').style.display = 'flex';
+                document.getElementById('status-badge').className = 'status-badge full-view';
+                document.getElementById('status-badge').textContent = 'Full View (Secure)';
+                document.getElementById('audit-stamp').style.display = 'none';
+            }
+            
+            loadDashboard();
+        }
+
+        async function loadDashboard() {
+            const errorContainer = document.getElementById('error-container');
+            errorContainer.innerHTML = '';
+            
+            const headers = {};
+            if (currentViewMode === 'full') {
+                const key = document.getElementById('architect-key').value;
+                if (key) {
+                    headers['X-Architect-Key'] = key;
+                }
+            }
+
+            try {
+                const response = await fetch(`/api/dashboard?view=${currentViewMode}`, {
+                    headers: headers
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        throw new Error('Unauthorized: Invalid or missing Architect key');
+                    }
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                // Update stats
+                document.getElementById('total-count').textContent = data.count;
+                document.getElementById('total-amount').textContent = formatCurrency(data.total_amount);
+                document.getElementById('view-mode-text').textContent = 
+                    data.view_mode === 'tax-compliance' ? 'Tax-Compliance' : 'Full View';
+                
+                // Style total amount card
+                const totalCard = document.getElementById('total-card');
+                if (data.total_amount > 0) {
+                    totalCard.className = 'stat-card positive';
+                } else if (data.total_amount < 0) {
+                    totalCard.className = 'stat-card negative';
+                } else {
+                    totalCard.className = 'stat-card';
+                }
+                
+                // Render transactions
+                renderTransactions(data.transactions);
+                
+            } catch (error) {
+                errorContainer.innerHTML = `<div class="error">⚠️ ${error.message}</div>`;
+                document.getElementById('transactions-container').innerHTML = 
+                    '<div class="loading">Failed to load transactions</div>';
+            }
+        }
+
+        function renderTransactions(transactions) {
+            const container = document.getElementById('transactions-container');
+            
+            if (transactions.length === 0) {
+                container.innerHTML = '<div class="loading">No transactions to display</div>';
+                return;
+            }
+
+            const table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${transactions.map(t => `
+                            <tr>
+                                <td><strong>${t.id}</strong></td>
+                                <td>${t.date}</td>
+                                <td>${t.description}</td>
+                                <td>${t.category}</td>
+                                <td><span class="type-badge ${t.type === 'Public' ? 'public' : 'private'}">${t.type}</span></td>
+                                <td><span class="amount ${t.amount > 0 ? 'positive' : 'negative'}">${formatCurrency(t.amount)}</span></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = table;
+        }
+
+        function formatCurrency(amount) {
+            const sign = amount >= 0 ? '+' : '';
+            return sign + amount.toLocaleString('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            });
+        }
+
+        // Load dashboard on page load
+        window.addEventListener('DOMContentLoaded', () => {
+            loadDashboard();
+        });
+    </script>
+</body>
+</html>
