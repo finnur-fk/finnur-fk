@@ -5,13 +5,11 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 )
 
 const (
 	// Architect key for accessing encrypted private/crypto assets
 	architectKeyEnv = "ARCHITECT_KEY"
-	defaultKey      = "master-architect-key-2024"
 )
 
 // Transaction represents a financial transaction
@@ -53,6 +51,11 @@ func main() {
 	http.HandleFunc("/api/dashboard", handleDashboard)
 	http.HandleFunc("/api/transactions", handleTransactions)
 
+	// Ensure architect key is set
+	if os.Getenv(architectKeyEnv) == "" {
+		log.Println("⚠️  WARNING: ARCHITECT_KEY environment variable not set. Full view mode will be unavailable.")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -79,28 +82,26 @@ func handleDashboard(w http.ResponseWriter, r *http.Request) {
 
 	var transactions []Transaction
 	var totalAmount float64
+	actualViewMode := "tax-compliance"
 
-	switch viewMode {
-	case "tax-compliance":
-		// Tax-Compliance mode: Only show Public transactions
-		for _, t := range allTransactions {
-			if t.Type == "Public" {
-				transactions = append(transactions, t)
-				totalAmount += t.Amount
-			}
-		}
-	case "full":
+	// Normalize view mode - default to tax-compliance
+	if viewMode == "" {
+		viewMode = "tax-compliance"
+	}
+
+	if viewMode == "full" {
 		// Full mode: Requires Architect key for Private/Crypto data
 		if !validateArchitectKey(architectKey) {
-			http.Error(w, "Unauthorized: Invalid Architect key required for full view", http.StatusUnauthorized)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 		transactions = allTransactions
 		for _, t := range transactions {
 			totalAmount += t.Amount
 		}
-	default:
-		// Default: Show all public transactions (same as tax-compliance)
+		actualViewMode = "full"
+	} else {
+		// Tax-Compliance mode (default): Only show Public transactions
 		for _, t := range allTransactions {
 			if t.Type == "Public" {
 				transactions = append(transactions, t)
@@ -111,13 +112,15 @@ func handleDashboard(w http.ResponseWriter, r *http.Request) {
 
 	response := DashboardResponse{
 		Transactions: transactions,
-		ViewMode:     viewMode,
+		ViewMode:     actualViewMode,
 		TotalAmount:  totalAmount,
 		Count:        len(transactions),
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Printf("Error encoding dashboard response: %v", err)
+	}
 }
 
 // handleTransactions provides detailed transaction information
@@ -125,16 +128,23 @@ func handleTransactions(w http.ResponseWriter, r *http.Request) {
 	transactionID := r.URL.Query().Get("id")
 	architectKey := r.Header.Get("X-Architect-Key")
 
+	if transactionID == "" {
+		http.Error(w, "Bad Request: Transaction ID required", http.StatusBadRequest)
+		return
+	}
+
 	for _, t := range allTransactions {
 		if t.ID == transactionID {
 			// If this is a Private/Crypto transaction, require architect key
 			if t.Type == "Private/Crypto" && !validateArchitectKey(architectKey) {
-				http.Error(w, "Unauthorized: Architect key required for Private/Crypto transactions", http.StatusUnauthorized)
+				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
 
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(t)
+			if err := json.NewEncoder(w).Encode(t); err != nil {
+				log.Printf("Error encoding transaction response: %v", err)
+			}
 			return
 		}
 	}
@@ -146,7 +156,8 @@ func handleTransactions(w http.ResponseWriter, r *http.Request) {
 func validateArchitectKey(key string) bool {
 	expectedKey := os.Getenv(architectKeyEnv)
 	if expectedKey == "" {
-		expectedKey = defaultKey
+		return false // No default key - must be explicitly set
 	}
-	return strings.TrimSpace(key) == strings.TrimSpace(expectedKey)
+	// Use constant-time comparison to prevent timing attacks
+	return key != "" && key == expectedKey
 }

@@ -4,8 +4,18 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 )
+
+const testArchitectKey = "test-key-for-testing-purposes"
+
+func TestMain(m *testing.M) {
+	// Set test architect key for all tests
+	os.Setenv(architectKeyEnv, testArchitectKey)
+	code := m.Run()
+	os.Exit(code)
+}
 
 func TestTaxComplianceView(t *testing.T) {
 	req, err := http.NewRequest("GET", "/api/dashboard?view=tax-compliance", nil)
@@ -66,7 +76,7 @@ func TestFullViewWithValidKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req.Header.Set("X-Architect-Key", defaultKey)
+	req.Header.Set("X-Architect-Key", testArchitectKey)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(handleDashboard)
@@ -143,7 +153,7 @@ func TestPrivateTransactionWithKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	req.Header.Set("X-Architect-Key", defaultKey)
+	req.Header.Set("X-Architect-Key", testArchitectKey)
 
 	rr := httptest.NewRecorder()
 	handler := http.HandlerFunc(handleTransactions)
@@ -219,5 +229,26 @@ func TestDefaultViewMode(t *testing.T) {
 	// Default should behave like tax-compliance (only public transactions)
 	if response.Count != 6 {
 		t.Errorf("Expected 6 public transactions in default view, got %d", response.Count)
+	}
+
+	// Verify view mode is normalized
+	if response.ViewMode != "tax-compliance" {
+		t.Errorf("Expected view mode 'tax-compliance', got '%s'", response.ViewMode)
+	}
+}
+
+func TestTransactionMissingID(t *testing.T) {
+	req, err := http.NewRequest("GET", "/api/transactions", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(handleTransactions)
+	handler.ServeHTTP(rr, req)
+
+	// Should return 400 Bad Request when ID is missing
+	if status := rr.Code; status != http.StatusBadRequest {
+		t.Errorf("handler returned wrong status code: got %v want %v", status, http.StatusBadRequest)
 	}
 }
