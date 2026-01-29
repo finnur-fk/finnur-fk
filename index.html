@@ -109,6 +109,7 @@
       width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block;
       box-shadow: 0 0 0 6px rgba(45,212,191,0.12);
     }
+    .dot.error { background: var(--danger); box-shadow: 0 0 0 6px rgba(245,158,11,0.16); }
     .btn {
       background: linear-gradient(120deg, #22d3ee, #2dd4bf);
       color: #04212f;
@@ -192,12 +193,18 @@
     const liquidityEl = document.getElementById('liquidity-total');
     const lastSyncEl = document.getElementById('last-sync');
     const auditEl = document.getElementById('audit-log');
+    const statusLiveEl = document.querySelector('.dot');
+    const liveRegion = document.createElement('div');
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.className = 'muted';
+    document.body.appendChild(liveRegion);
     const refreshBtn = document.getElementById('refresh-btn');
 
     const assets = [
-      { pair: 'XXRPZUSD', code: 'XRP', label: 'Ripple', defaultHolding: 1500 },
-      { pair: 'XETHZUSD', code: 'ETH', label: 'Ethereum', defaultHolding: 2.1 },
-      { pair: 'XXBTZUSD', code: 'BTC', label: 'Bitcoin', defaultHolding: 0.2 }
+      { pair: 'XXRPZUSD', code: 'XRP', label: 'Ripple', defaultHolding: 0 },
+      { pair: 'XETHZUSD', code: 'ETH', label: 'Ethereum', defaultHolding: 0 },
+      { pair: 'XXBTZUSD', code: 'BTC', label: 'Bitcoin', defaultHolding: 0 }
     ];
 
     const holdings = loadHoldings();
@@ -228,21 +235,24 @@
       recomputeTotals();
     }
 
+    let cachedPrices = {};
+
     function renderRows(prices = {}) {
+      cachedPrices = { ...cachedPrices, ...prices };
       assetRows.innerHTML = '';
       assets.forEach(asset => {
         const row = document.createElement('tr');
-        const price = prices[asset.pair]?.price ?? 0;
+        const price = (prices[asset.pair] || cachedPrices[asset.pair])?.price ?? 0;
         const value = price * (holdings[asset.code] || 0);
         row.innerHTML = `
           <td><strong>${asset.code}</strong><br><span class="muted">${asset.label}</span></td>
-          <td><input type="number" step="0.0001" min="0" value="${holdings[asset.code] ?? 0}" data-asset="${asset.code}"></td>
+          <td><input aria-label="${asset.label} holdings" type="number" step="0.0001" min="0" value="${holdings[asset.code] ?? 0}" data-asset="${asset.code}"></td>
           <td>${price ? '$' + price.toFixed(4) : '—'}</td>
           <td>${price ? '$' + value.toFixed(2) : '—'}</td>
         `;
         assetRows.appendChild(row);
       });
-      recomputeTotals(prices);
+      recomputeTotals();
     }
 
     function attachEvents() {
@@ -263,7 +273,13 @@
       refreshBtn.disabled = true;
       try {
         const res = await fetch(\`https://api.kraken.com/0/public/Ticker?pair=\${pairs}\`);
+        if (!res.ok) {
+          throw new Error('Kraken HTTP ' + res.status);
+        }
         const data = await res.json();
+        if (Array.isArray(data.error) && data.error.length) {
+          throw new Error('Kraken error: ' + data.error.join('; '));
+        }
         const prices = {};
         Object.entries(data.result || {}).forEach(([pair, payload]) => {
           prices[pair] = { price: parseFloat(payload.c?.[0] || '0') };
@@ -272,18 +288,23 @@
         const stamp = new Date().toLocaleString();
         lastSyncEl.textContent = 'Last Kraken sync: ' + stamp;
         updateAudit('Kraken', 'Ticker', stamp, 'OK');
+        statusLiveEl.classList.remove('error');
+        liveRegion.textContent = 'Kraken data refreshed successfully';
       } catch (err) {
         lastSyncEl.textContent = 'Kraken sync failed';
-        updateAudit('Kraken', 'Ticker', new Date().toLocaleString(), 'ERROR: ' + err.message);
+        statusLiveEl.classList.add('error');
+        const friendly = 'Could not refresh Kraken prices. Please retry.';
+        updateAudit('Kraken', 'Ticker', new Date().toLocaleString(), friendly);
+        liveRegion.textContent = friendly;
       } finally {
         refreshBtn.disabled = false;
       }
     }
 
-    function recomputeTotals(prices = {}) {
+    function recomputeTotals() {
       let cryptoTotal = 0;
       assets.forEach(asset => {
-        const price = prices[asset.pair]?.price ?? 0;
+        const price = cachedPrices[asset.pair]?.price ?? 0;
         cryptoTotal += price * (holdings[asset.code] || 0);
       });
       const paypal = parseFloat(paypalInput.value || '0');
