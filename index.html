@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Box 0 Dashboard · Crypto-Liquidity</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0b1524;
+      --panel: #111c2d;
+      --accent: #2dd4bf;
+      --muted: #8fa3c3;
+      --danger: #f59e0b;
+      --radius: 12px;
+      --shadow: 0 10px 40px rgba(0,0,0,0.35);
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(45,212,191,0.12), transparent 25%), radial-gradient(circle at 80% 0%, rgba(59,130,246,0.18), transparent 25%), var(--bg);
+      color: #e7edf7;
+      min-height: 100vh;
+      padding: 32px;
+      box-sizing: border-box;
+    }
+    h1, h2 {
+      margin: 0 0 12px;
+      letter-spacing: 0.5px;
+    }
+    h1 { font-size: 28px; }
+    h2 { font-size: 16px; color: var(--muted); font-weight: 600; text-transform: uppercase; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: linear-gradient(145deg, var(--panel), #0d182a);
+      border: 1px solid rgba(255,255,255,0.04);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(45,212,191,0.14);
+      color: #bff4ed;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+    .total {
+      font-size: 38px;
+      font-weight: 800;
+      color: #e0f2fe;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    th, td {
+      padding: 10px 8px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      color: #d5e2f1;
+      font-size: 14px;
+    }
+    th {
+      text-transform: uppercase;
+      font-size: 12px;
+      letter-spacing: 0.6px;
+      color: #9bb1d3;
+    }
+    input[type="number"] {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #e7edf7;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    input[type="number"]:focus {
+      outline: 2px solid var(--accent);
+      border-color: rgba(45,212,191,0.4);
+    }
+    .status {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .status span { display: inline-flex; align-items: center; gap: 6px; }
+    .dot {
+      width: 8px; height: 8px; border-radius: 50%; background: var(--accent); display: inline-block;
+      box-shadow: 0 0 0 6px rgba(45,212,191,0.12);
+    }
+    .dot.error { background: var(--danger); box-shadow: 0 0 0 6px rgba(245,158,11,0.16); }
+    .btn {
+      background: linear-gradient(120deg, #22d3ee, #2dd4bf);
+      color: #04212f;
+      font-weight: 700;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 10px 30px rgba(34,211,238,0.25);
+    }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .audit {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      background: rgba(0,0,0,0.2);
+      border-radius: 10px;
+      padding: 10px;
+      color: #cbd5f5;
+      font-size: 13px;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .muted { color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="summary card">
+    <div>
+      <div class="pill">Box 0 · Crypto-Liquidity</div>
+      <h1>Ultimate Sovereign Wealth Cockpit</h1>
+      <div class="status">
+        <span><span class="dot"></span> Kraken market live</span>
+        <span>Audit Mode: <strong>Bókari</strong></span>
+        <span id="last-sync" class="muted">Awaiting first sync…</span>
+      </div>
+    </div>
+    <div>
+      <div class="total" id="total-value">$0.00</div>
+      <div class="muted">Total Sovereign Wealth (Crypto + PayPal)</div>
+    </div>
+    <div>
+      <button class="btn" id="refresh-btn">Refresh Kraken Prices</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Crypto-Liquidity</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Holdings</th>
+            <th>Price (USD)</th>
+            <th>Value (USD)</th>
+          </tr>
+        </thead>
+        <tbody id="asset-rows"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Fiat Channels</h2>
+      <div style="margin-bottom:12px;">
+        <label for="paypal-balance" class="muted">PayPal Balance (USD)</label>
+        <input id="paypal-balance" type="number" step="0.01" min="0" placeholder="0.00">
+      </div>
+      <div class="card" style="background: rgba(255,255,255,0.04); margin-top: 8px;">
+        <div class="muted">Liquidity Snapshot</div>
+        <div class="total" id="liquidity-total" style="font-size:28px;">$0.00</div>
+        <div class="muted" style="font-size:13px;">Kraken Crypto + PayPal</div>
+      </div>
+    </div>
+    <div class="card">
+      <h2>Bókari Tax-View</h2>
+      <div class="audit" id="audit-log"></div>
+    </div>
+  </div>
+
+  <script>
+    const assetRows = document.getElementById('asset-rows');
+    const paypalInput = document.getElementById('paypal-balance');
+    const totalValueEl = document.getElementById('total-value');
+    const liquidityEl = document.getElementById('liquidity-total');
+    const lastSyncEl = document.getElementById('last-sync');
+    const auditEl = document.getElementById('audit-log');
+    const statusLiveEl = document.querySelector('.dot');
+    const liveRegion = document.createElement('div');
+    liveRegion.setAttribute('aria-live', 'polite');
+    liveRegion.setAttribute('aria-atomic', 'true');
+    liveRegion.className = 'muted';
+    document.body.appendChild(liveRegion);
+    const refreshBtn = document.getElementById('refresh-btn');
+
+    const assets = [
+      { pair: 'XXRPZUSD', code: 'XRP', label: 'Ripple', defaultHolding: 0 },
+      { pair: 'XETHZUSD', code: 'ETH', label: 'Ethereum', defaultHolding: 0 },
+      { pair: 'XXBTZUSD', code: 'BTC', label: 'Bitcoin', defaultHolding: 0 }
+    ];
+
+    const holdings = loadHoldings();
+    renderRows();
+    attachEvents();
+    fetchPrices();
+
+    function loadHoldings() {
+      try {
+        const saved = JSON.parse(localStorage.getItem('holdings') || '{}');
+        const paypal = localStorage.getItem('paypalBalance');
+        if (paypal) paypalInput.value = paypal;
+        return assets.reduce((acc, asset) => {
+          acc[asset.code] = saved[asset.code] ?? asset.defaultHolding;
+          return acc;
+        }, {});
+      } catch (e) {
+        return assets.reduce((acc, asset) => ({ ...acc, [asset.code]: asset.defaultHolding }), {});
+      }
+    }
+
+    function saveHoldings() {
+      localStorage.setItem('holdings', JSON.stringify(holdings));
+    }
+
+    function savePaypal() {
+      localStorage.setItem('paypalBalance', paypalInput.value || '0');
+      recomputeTotals();
+    }
+
+    let cachedPrices = {};
+
+    function renderRows(prices = {}) {
+      cachedPrices = { ...cachedPrices, ...prices };
+      assetRows.innerHTML = '';
+      assets.forEach(asset => {
+        const row = document.createElement('tr');
+        const price = (prices[asset.pair] || cachedPrices[asset.pair])?.price ?? 0;
+        const value = price * (holdings[asset.code] || 0);
+        row.innerHTML = `
+          <td><strong>${asset.code}</strong><br><span class="muted">${asset.label}</span></td>
+          <td><input aria-label="${asset.label} holdings" type="number" step="0.0001" min="0" value="${holdings[asset.code] ?? 0}" data-asset="${asset.code}"></td>
+          <td>${price ? '$' + price.toFixed(4) : '—'}</td>
+          <td>${price ? '$' + value.toFixed(2) : '—'}</td>
+        `;
+        assetRows.appendChild(row);
+      });
+      recomputeTotals();
+    }
+
+    function attachEvents() {
+      assetRows.addEventListener('input', (e) => {
+        if (e.target.matches('input[data-asset]')) {
+          const code = e.target.getAttribute('data-asset');
+          holdings[code] = parseFloat(e.target.value || '0');
+          saveHoldings();
+          recomputeTotals();
+        }
+      });
+      paypalInput.addEventListener('input', savePaypal);
+      refreshBtn.addEventListener('click', fetchPrices);
+    }
+
+    async function fetchPrices() {
+      const pairs = assets.map(a => a.pair).join(',');
+      refreshBtn.disabled = true;
+      try {
+        const res = await fetch(\`https://api.kraken.com/0/public/Ticker?pair=\${pairs}\`);
+        if (!res.ok) {
+          throw new Error('Kraken HTTP ' + res.status);
+        }
+        const data = await res.json();
+        if (Array.isArray(data.error) && data.error.length) {
+          throw new Error('Kraken error: ' + data.error.join('; '));
+        }
+        const prices = {};
+        Object.entries(data.result || {}).forEach(([pair, payload]) => {
+          prices[pair] = { price: parseFloat(payload.c?.[0] || '0') };
+        });
+        renderRows(prices);
+        const stamp = new Date().toLocaleString();
+        lastSyncEl.textContent = 'Last Kraken sync: ' + stamp;
+        updateAudit('Kraken', 'Ticker', stamp, 'OK');
+        statusLiveEl.classList.remove('error');
+        liveRegion.textContent = 'Kraken data refreshed successfully';
+      } catch (err) {
+        lastSyncEl.textContent = 'Kraken sync failed';
+        statusLiveEl.classList.add('error');
+        const friendly = 'Could not refresh Kraken prices. Please retry.';
+        updateAudit('Kraken', 'Ticker', new Date().toLocaleString(), friendly);
+        liveRegion.textContent = friendly;
+      } finally {
+        refreshBtn.disabled = false;
+      }
+    }
+
+    function recomputeTotals() {
+      let cryptoTotal = 0;
+      assets.forEach(asset => {
+        const price = cachedPrices[asset.pair]?.price ?? 0;
+        cryptoTotal += price * (holdings[asset.code] || 0);
+      });
+      const paypal = parseFloat(paypalInput.value || '0');
+      const total = cryptoTotal + paypal;
+      totalValueEl.textContent = '$' + total.toFixed(2);
+      liquidityEl.textContent = '$' + total.toFixed(2);
+      updateAudit('Total', 'Recompute', new Date().toLocaleString(), 'Crypto ' + cryptoTotal.toFixed(2) + ' + PayPal ' + paypal.toFixed(2));
+    }
+
+    function updateAudit(source, scope, timestamp, note) {
+      const line = \`[\${timestamp}] \${source} · \${scope} → \${note}\`;
+      const existing = auditEl.textContent ? auditEl.textContent.split('\\n') : [];
+      const next = [line, ...existing].slice(0, 12);
+      auditEl.textContent = next.join('\\n');
+    }
+  </script>
+</body>
+</html>
