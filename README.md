@@ -1,5 +1,5 @@
 # 🏛️ FKlausnir Enterprise Engine
-> **Status:** Operational | **Grade:** A+ Guaranteed | **CEO:** Finnur
+> **Status:** Operational (Allt komið í gang) | **Grade:** A+ Guaranteed | **CEO:** Finnur
 
 ---
 
