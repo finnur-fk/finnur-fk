@@ -23,3 +23,6 @@
 
 ### 🔌 Wallet connectivity
 Kranker veski-tenging er ekki enn útfærð í þessu repo. Ef þú ert að prófa að tengja veskið þitt þarf að bæta við raunverulegri tengingu eða stilla ytri þjónustu; þessi geymsla inniheldur enga tengikóða eins og er.
+
+### 📄 Beiðin um skrá
+Skráin **SPA_Amgen_deCODE_Final_Feb2026.pdf** er ekki hluti af þessari geymslu og engin afrit finnst hér.
