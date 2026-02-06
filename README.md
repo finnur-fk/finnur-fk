@@ -23,3 +23,6 @@
 
 ### 🔌 Wallet connectivity
 Kranker veski-tenging er ekki enn útfærð í þessu repo. Ef þú ert að prófa að tengja veskið þitt þarf að bæta við raunverulegri tengingu eða stilla ytri þjónustu; þessi geymsla inniheldur enga tengikóða eins og er.
+
+### 📡 Staða núna
+Allt sem við höfum sett hér inn er þegar live; engin þjónusta eða job þarf að ræsa úr þessu repo eins og staðan er í dag.
