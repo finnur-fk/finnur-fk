@@ -1,3 +1,9 @@
+fklausnir-enterprise-engine
+### 14. November Milestone
+
+Framtíðin byrjar hér! Öll settlement-mótun, audit og bókfærslur eru nú undir opinberri FKlausnir hvelfingu frá þessum degi. 🟢🚀📈
+
+=======
 # 🏛️ FKlausnir Enterprise Engine
 > **Status:** Operational | **Grade:** A+ Guaranteed | **CEO:** Finnur
 
@@ -22,4 +28,5 @@
 ---
 
 ### 🔌 Wallet connectivity
-Kranker veski-tenging er ekki enn útfærð í þessu repo. Ef þú ert að prófa að tengja veskið þitt þarf að bæta við raunverulegri tengingu eða stilla ytri þjónustu; þessi geymsla inniheldur enga tengikóða eins og er.
+Kranker veski-tenging er ekki enn útfærð í þessu repo. 
+Ef þú ert að prófa að tengja veskið þitt þarf að bæta við raunverulegri tengingu eða stilla ytri þjónustu; þessi geymsla inniheldur enga tengikóða eins og er. main
