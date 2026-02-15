@@ -23,3 +23,9 @@
 > Vandamál: „Eyddi ég einhverju? Ég hef gert það áður; það má kanna það.“
 
 Staða: Vottað að ástandið er skráð og undir stjórn í þessari útgáfu. Engin frekari aðgerð er krafist utan þessa yfirlits.
+
+### 🧾 Nánari lýsing á textanum
+- Spurningin „Eyddi ég einhverju?“ er varkár athugun um hvort eitthvað hafi verið fjarlægt eða eytt. Hún kallar á staðfestingu eða skoðun.
+- „Ég hef gert það áður“ bendir til fyrri reynslu af því að eyða eða fjarlægja og viðurkennir þannig mögulega endurtekningu.
+- „Það má kanna það“ leggur til að hægt sé að sannreyna stöðuna með frekari skoðun.
+- Samantekt: Textinn skráir sjálfskoðun um mögulega eyðingu, viðurkenningu á fyrri hegðun og boð um eftirfylgni með kannanir til staðfestingar.
